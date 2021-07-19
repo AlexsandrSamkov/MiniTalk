@@ -1,64 +1,44 @@
-// #include "../includes/client.h"
-#include <signal.h>
-#include <unistd.h>
-#include <stdio.h>
-#define ONE		0b00000001
-#define TWO		0b00000010
-#define THREE	0b00000100
-#define FOUR	0b00001000
-#define FIVE	0b00010000
-#define SIX		0b00100000
-#define SEVEN	0b01000000
-#define EGHIT	0b10000000
+#include "../includes/client.h"
 
-
-void go_sig(pid_t pid,char n)
+void	ft_sig_msg(pid_t pid, char n)
 {
 	if (n)
-		kill(pid,SIGUSR1);
-	else	
-		kill(pid,SIGUSR2);
-	usleep(50);
+	{
+		if (kill(pid, SIGUSR1) == -1)
+			ft_str_error("Error: signal\n");
+	}
+	else
+	{
+		if (kill(pid, SIGUSR2) == -1)
+			ft_str_error("Error: signal\n");
+	}
+	usleep(100);
 }
 
-
-
-void decoder(char *s)
+void	ft_coder(pid_t pid, char c)
 {
-	char c = 0;
-	if (s[0] == '1')
-		c |= ONE;
-	if (s[1] == '1')
-		c |= TWO;
-	if (s[2] == '1')
-		c |= THREE;
-	if (s[3] == '1')
-		c |= FOUR;			
-	if (s[4] == '1')
-		c |= FIVE;
-	if (s[5] == '1')
-		c |= SIX;	
-	if (s[6] == '1')
-		c |= SEVEN;	
-	if (s[7] == '1')
-		c |= EGHIT;		
-	printf("%c",c);	
+	ft_sig_msg(pid, (c & EGHIT));
+	ft_sig_msg(pid, (c & SEVEN));
+	ft_sig_msg(pid, (c & SIX));
+	ft_sig_msg(pid, (c & FIVE));
+	ft_sig_msg(pid, (c & FOUR));
+	ft_sig_msg(pid, (c & THREE));
+	ft_sig_msg(pid, (c & TWO));
+	ft_sig_msg(pid, (c & ONE));
+	usleep(100);
 }
 
-void coder(pid_t pid, char c)
+int	main(int argc, char *argv[])
 {
-	go_sig(pid,(int)(c & ONE));
-	go_sig(pid,(int)(c & TWO));
-	go_sig(pid,(int)(c & THREE));
-	go_sig(pid,(int)(c & FOUR));
-	go_sig(pid,(int)(c & FIVE));
-	go_sig(pid,(int)(c & SIX));
-	go_sig(pid,(int)(c & SEVEN));
-	go_sig(pid,(int)(c & EGHIT));
-}
+	pid_t	pid;
+	int		i;
 
-int main()
-{
-	decoder("00001100");
-	
+	if (argc != 3)
+		ft_str_error("Error: args\n");
+	pid = ft_atop(argv[1]);
+	if (!pid)
+		ft_str_error("Error: PID\n");
+	while (argv[2][i])
+		ft_coder(pid, argv[2][i++]);
+	return (0);
 }
