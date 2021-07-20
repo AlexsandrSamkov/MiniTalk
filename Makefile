@@ -1,53 +1,54 @@
-NAME			=	Mintalk
-SV				=	server
-CL				=	client
-OBJS_PATH_SV	=	objects_sv/
-OBJS_PATH_CL	=	objects_cl/
-SRCS_PATH		=	source/
-HEAD_CL			=	includes/client.h
-HEAD_SV			=	includes/server.h
-SRCS_LIST_SV	=	server.c
-SRCS_LIST_CL	= 	client.c utils_clinet.c 
-
-SRCS_CL			=	$(addprefix $(SRCS_PATH), $(SRCS_LIST_CL))
-SRCS_SV			=	$(addprefix $(SRCS_PATH), $(SRCS_LIST_SV))	
-OBJS_LIST_CL	=	$(patsubst %.c, %.o, $(SRCS_LIST_CL))
-
-OBJS_CL			=	$(addprefix $(OBJS_PATH_CL), $(OBJS_LIST_CL))
-OBJS_LIST_SV	=	$(patsubst %.c, %.o, $(SRCS_LIST_SV))
-OBJS_SV			=	$(addprefix $(OBJS_PATH_SV),$(OBJS_LIST_SV))
-RM				= 	rm -rf
-CC				=	gcc
-CFLAGS			=	-Wall -Wextra -Werror
-
+NAME		=	minitalk
+CL			=	client
+CL_HEAD		=	includes/client.h
+SRC_PATH	=	srcs/
+CL_OBJ_PATH	=	cl_objs/
+CL_SRC_LST	=	utills_client.c client.c
+CL_SRC		=	$(addprefix $(SRC_PATH), $(CL_SRC_LST))
+CL_OBJ_LST	=	$(patsubst %.c, %.o, $(CL_SRC_LST))
+CL_OBJ		=	$(addprefix $(CL_OBJ_PATH), $(CL_OBJ_LST))
+SV			=	server
+SV_HEAD		=	includes/server.h
+SV_OBJ_PATH	=	sv_objs/
+SV_SRC_LST	=	server.c
+SV_SRC		=	$(addprefix $(SRC_PATH), $(SV_SRC_LST))
+SV_OBJ_LST	=	$(patsubst %.c, %.o, $(SV_SRC_LST))
+SV_OBJ		=	$(addprefix $(SV_OBJ_PATH), $(SV_OBJ_LST))
+CC			=	gcc
+FLAGS		=	-Wall -Wextra -Werror
+RM			=	rm -rf
 all: $(NAME)
 
-$(NAME): $(CL)
+$(NAME): $(CL) $(SV)
 
-$(CL): $(OBJS_PATH_CL) $(OBJS_CL) $(HEAD_CL)
-	$(CC) $(CFLAGS) -I $(HEAD_CL) $(OBJS_CL) -o $(CL)
+$(CL): $(CL_OBJ_PATH) $(CL_OBJ)
+	$(CC) -I $(CL_HEAD) $(CL_FLAGS) $(CL_OBJ) -o $(CL)
 
-$(SV): $(OBJS_PATH_SV)
-	$(CC) $(CFLAGS) -I $(HEAD_SV) $(OBJS_SV) -o $(SV)
+$(CL_OBJ_PATH):
+	mkdir -p $(CL_OBJ_PATH)
 
-$(OBJS_PATH_SV):
-	mkdir -p $(OBJS_PATH_SV)
+$(CL_OBJ_PATH)%.o : $(SRC_PATH)%.c $(CL_HEAD)
+	$(CC) $(FLAGS) -c $< -o $@
 
-$(OBJS_PATH_SV)%.o : $(SRCS_SV)%.c  $(HEAD_SV)
-	$(CC) $(CFLAGS) -c -I $(HEAD_SV)  $< -o $@
+$(SV):$(SV_OBJ_PATH) $(SV_OBJ)
+	$(CC) -I $(SV_HEAD) $(SV_FLAGS) $(SV_OBJ) -o $(SV)
 
-$(OBJS_PATH_CL):
-	mkdir -p $(OBJS_PATH_CL)	
+$(SV_OBJ_PATH):
+	mkdir -p $(SV_OBJ_PATH)
 
-$(OBJS_PATH_CL)%.o : $(SRCS_CL)%.c  $(HEAD_CL)	
-	$(CC) $(CFLAGS) -c $< -o $@	
+$(SV_OBJ_PATH)%.o : $(SRC_PATH)%.c $(SV_HEAD)
+	$(CC) $(FLAGS) -c $< -o $@
+
+cl: $(CL)
+
+sv: $(SV)
 
 clean:
-	$(RM) $(OBJS_PATH_SV) $(OBJS_PATH_CL)
+	$(RM) $(SV_OBJ_PATH) $(CL_OBJ_PATH)
 
 fclean: clean
 	$(RM) $(SV) $(CL)
 
-re: fclean all
+re: clean all
 
-.PHONY:	all clean fclean re
+ .PHONY: all clean sv cl fclean re

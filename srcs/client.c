@@ -33,6 +33,7 @@ int	main(int argc, char *argv[])
 	pid_t	pid;
 	int		i;
 
+	i = 0;	
 	if (argc != 3)
 		ft_str_error("Error: args\n");
 	pid = ft_atop(argv[1]);

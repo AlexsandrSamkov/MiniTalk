@@ -52,8 +52,7 @@ void	ft_decoder(int sig)
 
 int	main(int argc, char *argv[])
 {
-	int	i;
-
+	(void)argv;
 	if (argc != 1)
 		return (ft_str_error("Error: args", 1));
 	write(1, "PID: ", 5);
